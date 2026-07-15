@@ -8,15 +8,17 @@
     <version>UNOFFICIAL</version>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <paper.version>26.1.2.build.74-stable</paper.version>
+        <slimefun.version>RC-37</slimefun.version>
+        <bstats.version>3.2.1</bstats.version>
     </properties>
 
     <repositories>
         <repository>
             <id>paper-repo</id>
-            <url>https://papermc.io/repo/repository/maven-public</url>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
             <id>spigot-repo</id>
@@ -54,12 +56,19 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.2</version>
 
                 <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
 
-                    <!-- Shade dependencies into the output jar -->
+                    <!-- 将依赖重定位进输出 jar，避免和其他插件冲突。 -->
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
@@ -67,7 +76,7 @@
                         </relocation>
                     </relocations>
 
-                    <!-- Exclude unneeded metadata files from shaded dependencies -->
+                    <!-- 排除 shaded 依赖中不需要的元数据文件。 -->
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
@@ -92,18 +101,26 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>${paper.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>com.github.Slimefun</groupId>
             <artifactId>Slimefun4</artifactId>
-            <version>RC-27</version>
+            <version>${slimefun.version}</version>
             <scope>provided</scope>
             <exclusions>
+                <exclusion>
+                    <groupId>io.papermc.paper</groupId>
+                    <artifactId>paper-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>io.github.baked-libs</groupId>
                     <artifactId>dough-api</artifactId>
@@ -114,7 +131,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>2.2.1</version>
+            <version>${bstats.version}</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

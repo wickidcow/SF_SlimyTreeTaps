@@ -1,33 +1,33 @@
 ---
-name: Bug Report
-about: Report a Bug or an Issue with SlimyTreeTaps.
+name: 缺陷反馈
+about: 反馈 SlimyTreeTaps 的缺陷或问题。
 title: ''
 labels: bug
 assignees: ''
 
 ---
 
-## Description (Required)
-<!-- A clear and detailed description of what exactly the Issue consists of. -->
-<!-- Please try to write as much as possible. "it doesn't work" is not sufficient. -->
-<!-- Try to write at least 4-6 sentences. -->
+## 问题描述（必填）
+<!-- 请清晰、详细地描述问题具体是什么。 -->
+<!-- 请尽量写完整，“它不能用”这样的描述不够定位问题。 -->
+<!-- 建议至少写 4-6 句话。 -->
 
-## Steps to reproduce the Issue (Required)
-<!-- Youtube Videos and Screenshots are recommended! -->
+## 复现步骤（必填）
+<!-- 推荐附上视频或截图。 -->
 
-## Expected behavior (Required)
-<!-- What did you expect to happen? -->
+## 预期行为（必填）
+<!-- 你原本期望发生什么？ -->
 
-## Server Log / Error Report
-<!-- Take a look at your Server Log and please provide any error reports you can find via https://pastebin.com/ -->
-<!-- We may discard your Issue if you just post it here, as it's unreadable for us. Please use Pastebin! -->
+## 服务器日志 / 报错信息
+<!-- 请查看服务器日志，并通过 https://pastebin.com/ 提供能找到的报错信息。 -->
+<!-- 如果直接把大段日志贴在这里，可能会因为难以阅读而被忽略。请使用 Pastebin。 -->
 
-## Environment (Required)
-<!-- We may also close your Issue if you are not providing the exact version numbers. -->
-<!-- "latest" IS NOT A VERSION NUMBER. -->
-<!-- You can also just run "/sf versions" and show us a screenshot of that. -->
+## 运行环境（必填）
+<!-- 如果没有提供精确版本号，我们也可能关闭这个 Issue。 -->
+<!-- “最新版”不是版本号。 -->
+<!-- 你也可以运行 “/sf versions” 并附上截图。 -->
 
- - Minecraft Version:
- - CS-CoreLib Version:
- - Slimefun Version:
- - SlimyTreeTaps Version: 
+ - Minecraft 版本：
+ - CS-CoreLib 版本：
+ - Slimefun 版本：
+ - SlimyTreeTaps 版本：
