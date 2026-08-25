@@ -4,13 +4,17 @@ on:
   push:
     branches:
       - master
-      - 'modernize/**'
   pull_request:
     branches:
       - master
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: slimytreetaps-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -44,9 +48,9 @@ jobs:
       - name: Build
         run: mvn -B clean package
 
-      - name: Upload JAR
+      - name: Upload raw JAR
         uses: actions/upload-artifact@v7
         with:
-          name: SF_SlimyTreeTaps
           path: target/SF_SlimyTreeTaps-*.jar
           if-no-files-found: error
+          archive: false
