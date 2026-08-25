@@ -9,6 +9,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
+
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
@@ -18,7 +20,6 @@ import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
 import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
 import io.github.thebusybiscuit.slimefun4.implementation.items.SimpleSlimefunItem;
 import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
-import me.mrCookieSlime.Slimefun.api.BlockStorage;
 
 public class TreeTool extends SimpleSlimefunItem<ItemUseHandler> implements NotPlaceable, DamageableItem {
 
@@ -87,7 +88,7 @@ public class TreeTool extends SimpleSlimefunItem<ItemUseHandler> implements NotP
                 && Tag.LOGS.isTagged(block.getType())
                 && !block.getType().name().startsWith("STRIPPED_")
                 && getStrippedType(block.getType()) != null
-                && !BlockStorage.hasBlockInfo(block.getLocation());
+                && !StorageCacheUtils.hasSlimefunBlock(block.getLocation());
     }
 
     private Material getStrippedType(Material material) {
