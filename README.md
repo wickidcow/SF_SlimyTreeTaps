@@ -12,8 +12,10 @@ This fork keeps the original item and research IDs intact while updating the add
 - Paper 26.2
 - Purpur 26.2
 - Folia 26.2 experimental
-- Java 21+ bytecode, built with Java 25
+- Java 25
 - Slimefun Legacy 4.1.39+
+
+Paper 26.2's API is itself compiled for Java 25, so this fork intentionally targets Java 25 bytecode rather than advertising Java 21 compatibility that the target server platform cannot provide.
 
 ## Modernization
 
@@ -62,7 +64,7 @@ As with any addon replacement, back up the server before swapping JARs and test 
 
 ## Builds and releases
 
-Pull requests are compiled against the exact Slimefun Legacy 4.1.39 release JAR. CI publishes the built addon as a raw JAR artifact rather than wrapping it in another ZIP.
+Pull requests are compiled and tested on Java 25 against the exact Slimefun Legacy 4.1.39 release JAR. CI also verifies that the produced addon uses Java 25 bytecode and publishes it as a raw JAR artifact rather than wrapping it in another ZIP.
 
 Version tags such as `v1.0.0` build a matching `SF_SlimyTreeTaps-1.0.0.jar` and create or update the GitHub Release automatically.
 
