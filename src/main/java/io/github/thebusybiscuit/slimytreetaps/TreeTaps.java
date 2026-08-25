@@ -402,28 +402,12 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
             int clumpValue,
             int clumpsPerRubber,
             SlimefunItemStack rubber) {
-        int divisor = greatestCommonDivisor(clumpValue, clumpsPerRubber);
-        int inputAmount = clumpsPerRubber / divisor;
-        int outputAmount = clumpValue / divisor;
-        int processingSeconds = 4 * outputAmount;
+        ResinConversion.Recipe recipe = ResinConversion.forClumpValue(clumpValue, clumpsPerRubber);
 
         machine.registerRecipe(
-                processingSeconds,
-                new ItemStack[] {new ItemStack(material, inputAmount)},
-                new ItemStack[] {new CustomItemStack(rubber, outputAmount)});
-    }
-
-    private int greatestCommonDivisor(int first, int second) {
-        int a = Math.abs(first);
-        int b = Math.abs(second);
-
-        while (b != 0) {
-            int remainder = a % b;
-            a = b;
-            b = remainder;
-        }
-
-        return Math.max(1, a);
+                recipe.processingSeconds(),
+                new ItemStack[] {new ItemStack(material, recipe.inputAmount())},
+                new ItemStack[] {new CustomItemStack(rubber, recipe.outputAmount())});
     }
 
     private int clampStackAmount(int amount) {
