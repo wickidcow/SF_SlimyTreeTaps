@@ -8,7 +8,8 @@ First Slimefun Legacy release of the modernized SlimyTreeTaps fork.
 
 - Updated for Paper 26.2 and Minecraft 1.21.11+.
 - Compiles against Slimefun Legacy 4.1.39.
-- Built with Java 25 while targeting Java 21 bytecode.
+- Requires Java 25, matching Paper 26.2's Java 25 API/runtime baseline.
+- CI verifies that the produced addon uses Java 25 class-file version 69.
 - Purpur support follows Paper compatibility.
 - Folia support is enabled and remains experimental pending wider runtime testing.
 
