@@ -15,10 +15,15 @@ vanilla-resin:
   enabled: true
 
   # Number of vanilla Resin Clumps dropped when a Pale Oak log is successfully tapped.
+  # Values are clamped to a valid Minecraft stack size (1-64).
   pale-oak-output: 1
 
   # Number of Resin Clumps produced by a Resin Extractor from Pale Oak.
+  # Values are clamped to a valid Minecraft stack size (1-64).
   extractor-output: 1
 
-  # Resin Clumps consumed by the Rubber Factory to produce one Rubber.
+  # Resin-equivalent cost of one Rubber in the Rubber Factory.
+  # This applies to Resin Clumps, Resin Blocks, Resin Bricks and Resin Bricks blocks.
+  # Bulk recipes preserve the same resin value and processing rate automatically.
+  # Values are clamped to 1-64.
   rubber-recipe-clumps: 4
