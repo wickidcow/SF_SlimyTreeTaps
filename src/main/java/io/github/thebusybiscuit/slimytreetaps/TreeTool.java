@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Orientable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -56,17 +58,21 @@ public class TreeTool extends SimpleSlimefunItem<ItemUseHandler> implements NotP
 
     private void harvest(Player player, Block block, BlockFace clickedFace, ItemStack tool) {
         Material original = block.getType();
-
-        // Keep the hot path cheap: cached material check first, then cached
-        // Slimefun occupancy, and only then the protection-provider lookup.
-        if (!LogCache.isTappable(original)
-                || StorageCacheUtils.hasSlimefunBlock(block.getLocation())
-                || !Slimefun.getProtectionManager().hasPermission(player, block, Interaction.BREAK_BLOCK)) {
+        if (!LogCache.isTappable(original)) {
             return;
         }
 
-        player.getWorld().playSound(
-                block.getLocation(), block.getBlockData().getSoundGroup().getHitSound(), 1.0F, 1.0F);
+        Location blockLocation = block.getLocation();
+
+        // Keep the hot path cheap: cached material check first, then cached
+        // Slimefun occupancy, and only then the protection-provider lookup.
+        if (StorageCacheUtils.hasSlimefunBlock(blockLocation)
+                || !Slimefun.getProtectionManager().hasPermission(player, blockLocation, Interaction.BREAK_BLOCK)) {
+            return;
+        }
+
+        block.getWorld().playSound(
+                blockLocation, block.getBlockData().getSoundGroup().getHitSound(), 1.0F, 1.0F);
 
         if (ThreadLocalRandom.current().nextInt(100) < chance) {
             Material stripped = LogCache.strippedVariant(original);
@@ -74,7 +80,7 @@ public class TreeTool extends SimpleSlimefunItem<ItemUseHandler> implements NotP
                 return;
             }
 
-            block.setType(stripped);
+            stripLog(block, stripped);
 
             ItemStack drop = isPaleOak(original) && paleOakOutput != null
                     ? paleOakOutput.clone()
@@ -82,7 +88,7 @@ public class TreeTool extends SimpleSlimefunItem<ItemUseHandler> implements NotP
 
             Location dropLocation;
             if (clickedFace == null) {
-                dropLocation = block.getLocation().add(0.5, 0.5, 0.5);
+                dropLocation = blockLocation.clone().add(0.5, 0.5, 0.5);
             } else {
                 dropLocation = block.getRelative(clickedFace).getLocation().add(0.5, 0.5, 0.5);
             }
@@ -91,6 +97,19 @@ public class TreeTool extends SimpleSlimefunItem<ItemUseHandler> implements NotP
         }
 
         damageItem(player, tool);
+    }
+
+    private void stripLog(Block block, Material strippedType) {
+        BlockData originalData = block.getBlockData();
+        block.setType(strippedType, false);
+
+        if (originalData instanceof Orientable originalOrientable) {
+            BlockData strippedData = block.getBlockData();
+            if (strippedData instanceof Orientable strippedOrientable) {
+                strippedOrientable.setAxis(originalOrientable.getAxis());
+                block.setBlockData(strippedOrientable, false);
+            }
+        }
     }
 
     static boolean isPaleOak(Material material) {
