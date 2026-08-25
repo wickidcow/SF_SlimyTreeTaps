@@ -29,10 +29,12 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
         saveDefaultConfig();
         FileConfiguration cfg = getConfig();
 
+        LogCache.init(Tag.LOGS.getValues());
+
         boolean vanillaResinEnabled = cfg.getBoolean("vanilla-resin.enabled", true);
-        int paleOakOutput = Math.max(1, cfg.getInt("vanilla-resin.pale-oak-output", 1));
-        int extractorOutput = Math.max(1, cfg.getInt("vanilla-resin.extractor-output", 1));
-        int resinClumpsPerRubber = Math.max(1, cfg.getInt("vanilla-resin.rubber-recipe-clumps", 4));
+        int paleOakOutput = clampStackAmount(cfg.getInt("vanilla-resin.pale-oak-output", 1));
+        int extractorOutput = clampStackAmount(cfg.getInt("vanilla-resin.extractor-output", 1));
+        int resinClumpsPerRubber = clampStackAmount(cfg.getInt("vanilla-resin.rubber-recipe-clumps", 4));
 
         SlimefunItemStack treeTap = new SlimefunItemStack(
                 "TREE_TAP",
@@ -203,10 +205,7 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
                                 new ItemStack[] {new CustomItemStack(stickyResin, 2)},
                                 new ItemStack[] {rubber});
                         if (vanillaResinEnabled) {
-                            registerRecipe(
-                                    4,
-                                    new ItemStack[] {new ItemStack(Material.RESIN_CLUMP, resinClumpsPerRubber)},
-                                    new ItemStack[] {rubber});
+                            registerVanillaResinRecipes(this, rubber, resinClumpsPerRubber);
                         }
                         registerRecipe(
                                 6,
@@ -238,13 +237,11 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
                         }) {
                     @Override
                     public void registerDefaultRecipes() {
-                        for (Material log : Tag.LOGS.getValues()) {
-                            if (!log.name().startsWith("STRIPPED_")) {
-                                ItemStack result = vanillaResinEnabled && TreeTool.isPaleOak(log)
-                                        ? new ItemStack(Material.RESIN_CLUMP, extractorOutput)
-                                        : stickyResin;
-                                registerRecipe(14, new ItemStack[] {new ItemStack(log, 8)}, new ItemStack[] {result});
-                            }
+                        for (Material log : LogCache.tappableLogs()) {
+                            ItemStack result = vanillaResinEnabled && TreeTool.isPaleOak(log)
+                                    ? new ItemStack(Material.RESIN_CLUMP, extractorOutput)
+                                    : stickyResin;
+                            registerRecipe(14, new ItemStack[] {new ItemStack(log, 8)}, new ItemStack[] {result});
                         }
                     }
 
@@ -276,13 +273,11 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
                         }) {
                     @Override
                     public void registerDefaultRecipes() {
-                        for (Material log : Tag.LOGS.getValues()) {
-                            if (!log.name().startsWith("STRIPPED_")) {
-                                ItemStack result = vanillaResinEnabled && TreeTool.isPaleOak(log)
-                                        ? new ItemStack(Material.RESIN_CLUMP, extractorOutput)
-                                        : stickyResin;
-                                registerRecipe(6, new ItemStack[] {new ItemStack(log, 8)}, new ItemStack[] {result});
-                            }
+                        for (Material log : LogCache.tappableLogs()) {
+                            ItemStack result = vanillaResinEnabled && TreeTool.isPaleOak(log)
+                                    ? new ItemStack(Material.RESIN_CLUMP, extractorOutput)
+                                    : stickyResin;
+                            registerRecipe(6, new ItemStack[] {new ItemStack(log, 8)}, new ItemStack[] {result});
                         }
                     }
 
@@ -389,6 +384,50 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
         magicalMirrorResearch.register();
 
         new MagicalMirrorListener(this, mirror);
+    }
+
+    private void registerVanillaResinRecipes(
+            RubberFactory machine,
+            SlimefunItemStack rubber,
+            int clumpsPerRubber) {
+        registerEquivalentResinRecipe(machine, Material.RESIN_CLUMP, 1, clumpsPerRubber, rubber);
+        registerEquivalentResinRecipe(machine, Material.RESIN_BLOCK, 9, clumpsPerRubber, rubber);
+        registerEquivalentResinRecipe(machine, Material.RESIN_BRICK, 1, clumpsPerRubber, rubber);
+        registerEquivalentResinRecipe(machine, Material.RESIN_BRICKS, 4, clumpsPerRubber, rubber);
+    }
+
+    private void registerEquivalentResinRecipe(
+            RubberFactory machine,
+            Material material,
+            int clumpValue,
+            int clumpsPerRubber,
+            SlimefunItemStack rubber) {
+        int divisor = greatestCommonDivisor(clumpValue, clumpsPerRubber);
+        int inputAmount = clumpsPerRubber / divisor;
+        int outputAmount = clumpValue / divisor;
+        int processingSeconds = 4 * outputAmount;
+
+        machine.registerRecipe(
+                processingSeconds,
+                new ItemStack[] {new ItemStack(material, inputAmount)},
+                new ItemStack[] {new CustomItemStack(rubber, outputAmount)});
+    }
+
+    private int greatestCommonDivisor(int first, int second) {
+        int a = Math.abs(first);
+        int b = Math.abs(second);
+
+        while (b != 0) {
+            int remainder = a % b;
+            a = b;
+            b = remainder;
+        }
+
+        return Math.max(1, a);
+    }
+
+    private int clampStackAmount(int amount) {
+        return Math.max(1, Math.min(64, amount));
     }
 
     private String[] getLore(String item, int chance) {
