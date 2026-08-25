@@ -25,13 +25,15 @@ First Slimefun Legacy release of the modernized SlimyTreeTaps fork.
 
 - Added a startup cache for tappable logs and stripped-log mappings.
 - Replaced deprecated BlockStorage checks in the tree-tapping hot path with the modern Slimefun storage cache API.
+- Tree tapping now preserves the original log axis when converting a log to its stripped variant.
 - Added null-safe harvest drop placement.
 - Added Slimefun protection-manager checks for both tree harvesting and Magical Mirror item frames.
+- Tree-tap block changes are reported through Slimefun's protection loggers so supported CoreProtect/LogBlock installations can audit the change.
 - Hardened Magical Mirror item-frame interactions against duplicate interaction events.
 - Made Magical Mirror interaction state thread-safe for Folia-style region scheduling.
-- Routed mirror chat-input callbacks through the player entity scheduler.
-- Invalid or corrupted mirror destination data is handled safely instead of bubbling exceptions through the interaction event.
-- Failed mirror teleports refund the consumed Ender Pearl.
+- Routed mirror chat-input and teleport-completion callbacks through the player entity scheduler.
+- Invalid or corrupted mirror destination data, including non-finite coordinates, is handled safely instead of bubbling exceptions through the interaction event.
+- Failed or exceptional mirror teleports refund the consumed Ender Pearl while the player remains available.
 
 ### Project modernization
 
@@ -42,4 +44,5 @@ First Slimefun Legacy release of the modernized SlimyTreeTaps fork.
 - Removed dependency on the old upstream auto-updater.
 - Updated GitHub Actions to current Node 24-based action releases.
 - CI now cancels superseded PR builds and publishes a raw JAR artifact.
+- Added JUnit coverage for the cached log mapping behavior.
 - Added tag-driven GitHub Releases with generated release notes and a raw JAR release asset.
