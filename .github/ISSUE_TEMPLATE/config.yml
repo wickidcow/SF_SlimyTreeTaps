@@ -1,8 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 缺陷反馈指南
-    url: https://github.com/TheBusyBiscuit/Slimefun4/wiki/How-to-report-bugs
-    about: 提交前请先阅读这份指南。
-  - name: Discord 服务器（问题与建议）
-    url: https://discord.gg/fsD4Bkh
-    about: 请在这里提问、解答问题或提出建议。
+  - name: Slimefun Legacy
+    url: https://github.com/wickidcow/Slimefun-Legacy
+    about: Check the Slimefun Legacy project for core Slimefun information and compatibility notes.
