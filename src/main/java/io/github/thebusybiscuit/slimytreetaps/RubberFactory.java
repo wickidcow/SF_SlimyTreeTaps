@@ -11,13 +11,14 @@ import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.AContainer;
 
 public abstract class RubberFactory extends AContainer implements RecipeDisplayItem {
 
-    public RubberFactory(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
+    protected RubberFactory(
+            ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
     }
 
     @Override
     public String getInventoryTitle() {
-        return "橡胶工厂";
+        return "Rubber Factory";
     }
 
     @Override
@@ -34,5 +35,4 @@ public abstract class RubberFactory extends AContainer implements RecipeDisplayI
     public int getCapacity() {
         return 256;
     }
-
 }
