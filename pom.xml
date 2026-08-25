@@ -6,11 +6,12 @@
 
     <groupId>io.github.wickidcow</groupId>
     <artifactId>SF_SlimyTreeTaps</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>${revision}</version>
     <name>SF_SlimyTreeTaps</name>
     <description>Modernized SlimyTreeTaps for Slimefun Legacy</description>
 
     <properties>
+        <revision>1.0.0-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
         <paper.version>26.2.build.115-stable</paper.version>
