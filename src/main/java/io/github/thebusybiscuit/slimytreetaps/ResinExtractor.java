@@ -11,13 +11,14 @@ import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.abstractItems.AContainer;
 
 public abstract class ResinExtractor extends AContainer implements RecipeDisplayItem {
 
-    public ResinExtractor(ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
+    protected ResinExtractor(
+            ItemGroup itemGroup, SlimefunItemStack item, RecipeType recipeType, ItemStack[] recipe) {
         super(itemGroup, item, recipeType, recipe);
     }
 
     @Override
     public String getInventoryTitle() {
-        return "树脂提取机";
+        return "Resin Extractor";
     }
 
     @Override
@@ -29,5 +30,4 @@ public abstract class ResinExtractor extends AContainer implements RecipeDisplay
     public String getMachineIdentifier() {
         return "RESIN_EXTRACTOR";
     }
-
 }
