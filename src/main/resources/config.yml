@@ -1,17 +1,29 @@
-# SlimyTreeTaps 配置
+# SlimyTreeTaps configuration
 
-options:
-  # 开发构建会自动检查并安装更新。
-  auto-update: true
-
-# 使用树木刮刀时获得琥珀的概率，单位为百分比。
+# Chance to obtain Amber with the Tree Scraper, in percent.
 amber-chance: 16
 
-# 不同树木龙头采集树脂的概率，单位为百分比。
+# Resin harvesting chances for each Tree Tap, in percent.
 resin-chance:
-  # 普通树木龙头
   standard: 12
-  # 强化树木龙头
   reinforced: 24
-  # 钻石树木龙头
   diamond: 32
+
+# Vanilla resin integration for Minecraft 1.21.4+.
+# Pale Oak becomes the natural bridge between vanilla Resin and SlimyTreeTaps.
+vanilla-resin:
+  enabled: true
+
+  # Number of vanilla Resin Clumps dropped when a Pale Oak log is successfully tapped.
+  # Values are clamped to a valid Minecraft stack size (1-64).
+  pale-oak-output: 1
+
+  # Number of Resin Clumps produced by a Resin Extractor from Pale Oak.
+  # Values are clamped to a valid Minecraft stack size (1-64).
+  extractor-output: 1
+
+  # Resin-equivalent cost of one Rubber in the Rubber Factory.
+  # This applies to Resin Clumps, Resin Blocks, Resin Bricks and Resin Bricks blocks.
+  # Bulk recipes preserve the same resin value and processing rate automatically.
+  # Values are clamped to 1-64.
+  rubber-recipe-clumps: 4

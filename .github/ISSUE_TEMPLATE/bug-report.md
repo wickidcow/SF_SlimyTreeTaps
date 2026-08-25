@@ -1,33 +1,29 @@
 ---
-name: 缺陷反馈
-about: 反馈 SlimyTreeTaps 的缺陷或问题。
+name: Bug Report
+about: Report a problem with SF_SlimyTreeTaps.
 title: ''
 labels: bug
 assignees: ''
-
 ---
 
-## 问题描述（必填）
-<!-- 请清晰、详细地描述问题具体是什么。 -->
-<!-- 请尽量写完整，“它不能用”这样的描述不够定位问题。 -->
-<!-- 建议至少写 4-6 句话。 -->
+## Description
+<!-- Clearly describe the problem and what you were doing when it happened. -->
 
-## 复现步骤（必填）
-<!-- 推荐附上视频或截图。 -->
+## Steps to reproduce
+<!-- List the smallest set of steps that reliably reproduces the problem. Screenshots or video are welcome. -->
 
-## 预期行为（必填）
-<!-- 你原本期望发生什么？ -->
+## Expected behavior
+<!-- What did you expect to happen? -->
 
-## 服务器日志 / 报错信息
-<!-- 请查看服务器日志，并通过 https://pastebin.com/ 提供能找到的报错信息。 -->
-<!-- 如果直接把大段日志贴在这里，可能会因为难以阅读而被忽略。请使用 Pastebin。 -->
+## Server log / error report
+<!-- Include the relevant error and surrounding log lines. Please use a paste service for large logs. -->
 
-## 运行环境（必填）
-<!-- 如果没有提供精确版本号，我们也可能关闭这个 Issue。 -->
-<!-- “最新版”不是版本号。 -->
-<!-- 你也可以运行 “/sf versions” 并附上截图。 -->
+## Environment
+<!-- Exact versions are important. "Latest" is not a version number. /sf versions is useful here. -->
 
- - Minecraft 版本：
- - CS-CoreLib 版本：
- - Slimefun 版本：
- - SlimyTreeTaps 版本：
+- Minecraft version:
+- Server software and build (Paper/Purpur/Folia):
+- Java version:
+- Slimefun Legacy version:
+- SF_SlimyTreeTaps version:
+- Other relevant Slimefun addons:

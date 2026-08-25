@@ -1,6 +1,7 @@
 /bin/
 /.settings/
 /target/
+/libs/
 /.idea/
 *.iml
 .project
