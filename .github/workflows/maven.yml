@@ -1,25 +1,52 @@
-name: Java 持续集成
+name: Build SlimyTreeTaps
 
 on:
   push:
     branches:
-    - master
+      - master
+      - 'modernize/**'
   pull_request:
     branches:
-    - master
+      - master
+
+permissions:
+  contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: 设置 JDK 25
-      uses: actions/setup-java@v4
-      with:
-        java-version: '25'
-        distribution: 'temurin'
-        cache: maven
-    - name: 使用 Maven 构建
-      run: mvn package --file pom.xml
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: temurin
+          cache: maven
+
+      - name: Install Slimefun Legacy 4.1.39 API
+        run: |
+          mkdir -p libs
+          curl -fL \
+            https://github.com/wickidcow/Slimefun-Legacy/releases/download/v4.1.39/Slimefun-Legacy4.1.39.jar \
+            -o libs/Slimefun-Legacy4.1.39.jar
+          mvn -B install:install-file \
+            -Dfile=libs/Slimefun-Legacy4.1.39.jar \
+            -DgroupId=com.github.slimefun \
+            -DartifactId=Slimefun \
+            -Dversion=4.1.39 \
+            -Dpackaging=jar \
+            -DgeneratePom=true
+
+      - name: Build
+        run: mvn -B clean package
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: SF_SlimyTreeTaps
+          path: target/SF_SlimyTreeTaps-*.jar
+          if-no-files-found: error

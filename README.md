@@ -1,32 +1,57 @@
-# SlimyTreeTaps
-SlimyTreeTaps 是一个 [Slimefun4](https://github.com/Slimefun/Slimefun4/) 附属插件。<br>
-你需要先安装 Slimefun4，这个插件才能正常工作。
+# SF_SlimyTreeTaps
 
-SlimyTreeTaps 的灵感主要来自知名模组 [IndustrialCraft 2](https://www.curseforge.com/minecraft/mc-mods/industrial-craft)。
-它为 Slimefun 添加了树木龙头。
-对任意原木使用树木龙头即可获得树脂，并进一步加工成橡胶和塑料。<br>
-这为 Slimefun 提供了一条替代的塑料获取路线。
+A modern continuation of **SlimyTreeTaps** for **Slimefun Legacy**.
 
-这个附属插件还会为游戏加入一些魔法元素，例如琥珀、魔法镜以及其他琥珀相关物品。
+SlimyTreeTaps was originally created by **TheBusyBiscuit** and was inspired by the classic IndustrialCraft 2 tree-tap progression. It adds an alternate path to Slimefun plastic production through resin, rubber, and raw plastic, along with Amber and Magical Mirrors.
 
-## 下载 SlimyTreeTaps
-你可以在这里下载 SlimyTreeTaps：[开发构建](https://thebusybiscuit.github.io/builds/TheBusyBiscuit/SlimyTreeTaps/master/)
+This fork keeps the original item and research IDs intact while updating the addon for modern Paper-based servers.
 
-<p align="center">
-  <a href="https://thebusybiscuit.github.io/builds/TheBusyBiscuit/SlimyTreeTaps/master/">
-    <img src="https://thebusybiscuit.github.io/builds/TheBusyBiscuit/SlimyTreeTaps/master/badge.svg" alt="构建服务器"/>
-  </a>
-</p>
+## Compatibility
 
-## Discord
-你可以在 Discord 上找到 Slimefun 社区！
-点击下方徽章即可加入服务器，提出建议、问题，或参与和本插件相关的讨论。
+- Minecraft 1.21.11+
+- Paper 26.2
+- Purpur 26.2
+- Folia 26.2 experimental
+- Java 21+ bytecode, built with Java 25
+- Slimefun Legacy 4.1.39+
 
-<p align="center">
-  <a href="https://discord.gg/slimefun">
-    <img src="https://discordapp.com/api/guilds/565557184348422174/widget.png?style=banner3" alt="Discord 邀请"/>
-  </a>
-</p>
+## Modernization
 
-## 开源
-本项目是开源项目，并基于 [MIT 许可证](https://github.com/Slimefun-Reloaded/SlimyTreeTaps/blob/master/LICENSE) 授权。
+The Legacy fork focuses on compatibility and preserving existing worlds rather than replacing the original progression.
+
+Current work includes:
+
+- Paper 26.2 and Slimefun Legacy build target
+- English-only source, configuration, and player-facing text
+- Hardened Magical Mirror interactions and teleport handling
+- Safer tree stripping without assuming every log has a matching material name
+- Pale Oak support
+- Vanilla `RESIN_CLUMP` integration
+- Pale Oak Resin Extractor recipes
+- Vanilla Resin Clumps as an alternate Rubber Factory input
+- Existing SlimyTreeTaps item IDs and research IDs preserved
+
+### Vanilla Resin integration
+
+Normal logs continue to produce SlimyTreeTaps **Sticky Resin**.
+
+Pale Oak can instead produce Minecraft's vanilla **Resin Clumps**, which can be processed in the Rubber Factory. Resin Extractors also recognize Pale Oak and can automate the vanilla-resin branch.
+
+This integration can be disabled or rebalanced in `config.yml`.
+
+## Original project
+
+SlimyTreeTaps was created by TheBusyBiscuit and later maintained by members of the Slimefun community. This fork exists to keep that work usable with Slimefun Legacy and current Minecraft server software.
+
+Original project lineage:
+
+- TheBusyBiscuit / SlimyTreeTaps
+- Slimefun-Addon-Community / SlimyTreeTaps
+- Slimefun-Reloaded / SlimyTreeTaps
+- wickidcow / SF_SlimyTreeTaps
+
+## License
+
+SlimyTreeTaps is licensed under the MIT License. See `LICENSE`.
+
+This project is not affiliated with Mojang Studios or Microsoft.
