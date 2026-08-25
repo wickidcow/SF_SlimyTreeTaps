@@ -145,12 +145,22 @@ public class MagicalMirror extends SimpleSlimefunItem<ItemUseHandler> implements
             return;
         }
 
-        player.teleportAsync(destination.get()).thenAccept(teleported ->
-                player.getScheduler().execute(
-                        plugin,
-                        () -> finishTeleport(player, item, teleported.booleanValue()),
-                        () -> {},
-                        1L));
+        player.teleportAsync(destination.get()).whenComplete((teleported, failure) -> {
+            boolean success = failure == null && Boolean.TRUE.equals(teleported);
+
+            if (failure != null) {
+                plugin.getLogger().log(
+                        Level.WARNING,
+                        "Magical Mirror teleport failed for " + player.getName() + ": " + failure.getMessage());
+            }
+
+            player.getScheduler().execute(
+                    plugin,
+                    () -> finishTeleport(player, item, success),
+                    () -> plugin.getLogger().fine(
+                            "Could not finish a Magical Mirror teleport because the player entity retired."),
+                    1L);
+        });
     }
 
     private void finishTeleport(Player player, ItemStack item, boolean teleported) {
@@ -216,13 +226,21 @@ public class MagicalMirror extends SimpleSlimefunItem<ItemUseHandler> implements
                 return Optional.empty();
             }
 
-            return Optional.of(new Location(
-                    world,
-                    json.get("x").getAsDouble(),
-                    json.get("y").getAsDouble(),
-                    json.get("z").getAsDouble(),
-                    json.get("yaw").getAsFloat(),
-                    json.get("pitch").getAsFloat()));
+            double x = json.get("x").getAsDouble();
+            double y = json.get("y").getAsDouble();
+            double z = json.get("z").getAsDouble();
+            float yaw = json.get("yaw").getAsFloat();
+            float pitch = json.get("pitch").getAsFloat();
+
+            if (!Double.isFinite(x)
+                    || !Double.isFinite(y)
+                    || !Double.isFinite(z)
+                    || !Float.isFinite(yaw)
+                    || !Float.isFinite(pitch)) {
+                throw new IllegalArgumentException("destination contains non-finite coordinates");
+            }
+
+            return Optional.of(new Location(world, x, y, z, yaw, pitch));
         } catch (RuntimeException ex) {
             plugin.getLogger().log(
                     Level.WARNING,
