@@ -61,11 +61,12 @@ As with any addon replacement, back up the server before swapping JARs and test 
 
 SlimyTreeTaps was created by TheBusyBiscuit and later maintained by members of the Slimefun community. This fork exists to keep that work usable with Slimefun Legacy and current Minecraft server software.
 
-Original project lineage:
+Project lineage and modernization references:
 
 - TheBusyBiscuit / SlimyTreeTaps
 - Slimefun-Addon-Community / SlimyTreeTaps
 - Slimefun-Reloaded / SlimyTreeTaps
+- Quotidietium / SlimyTreeTaps-1.21.11 (modern interaction and log-cache work used as a reference)
 - wickidcow / SF_SlimyTreeTaps
 
 ## License
