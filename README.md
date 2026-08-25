@@ -24,11 +24,14 @@ Current work includes:
 - Paper 26.2 and Slimefun Legacy build target
 - English-only source, configuration, and player-facing text
 - Hardened Magical Mirror interactions and teleport handling
-- Safer tree stripping without assuming every log has a matching material name
+- Folia-safe mirror state tracking and entity-scheduler callbacks
+- Cached log/stripped-log mappings for the tree-tapping hot path
+- Modern Slimefun storage-cache checks instead of the legacy BlockStorage API
 - Pale Oak support
 - Vanilla `RESIN_CLUMP` integration
 - Pale Oak Resin Extractor recipes
-- Vanilla Resin Clumps as an alternate Rubber Factory input
+- Vanilla Resin Clumps, Resin Blocks, Resin Bricks, and Resin Bricks blocks as Rubber Factory inputs
+- Resin-value-preserving bulk recipes so compacted vanilla resin does not change production balance
 - Existing SlimyTreeTaps item IDs and research IDs preserved
 
 ### Vanilla Resin integration
@@ -36,6 +39,8 @@ Current work includes:
 Normal logs continue to produce SlimyTreeTaps **Sticky Resin**.
 
 Pale Oak can instead produce Minecraft's vanilla **Resin Clumps**, which can be processed in the Rubber Factory. Resin Extractors also recognize Pale Oak and can automate the vanilla-resin branch.
+
+The Rubber Factory accepts vanilla resin in all common storage/processed forms. Bulk conversions are calculated from the configured `rubber-recipe-clumps` value so Resin Blocks and Resin Bricks keep the same underlying resin value and production rate as loose Resin Clumps.
 
 This integration can be disabled or rebalanced in `config.yml`.
 
