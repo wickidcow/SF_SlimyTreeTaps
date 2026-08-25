@@ -32,30 +32,34 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
         LogCache.init(Tag.LOGS.getValues());
 
         boolean vanillaResinEnabled = cfg.getBoolean("vanilla-resin.enabled", true);
-        int paleOakOutput = clampStackAmount(cfg.getInt("vanilla-resin.pale-oak-output", 1));
-        int extractorOutput = clampStackAmount(cfg.getInt("vanilla-resin.extractor-output", 1));
-        int resinClumpsPerRubber = clampStackAmount(cfg.getInt("vanilla-resin.rubber-recipe-clumps", 4));
+        int standardResinChance = configuredInt(cfg, "resin-chance.standard", 12, 0, 100);
+        int reinforcedResinChance = configuredInt(cfg, "resin-chance.reinforced", 24, 0, 100);
+        int diamondResinChance = configuredInt(cfg, "resin-chance.diamond", 32, 0, 100);
+        int amberChance = configuredInt(cfg, "amber-chance", 16, 0, 100);
+        int paleOakOutput = configuredInt(cfg, "vanilla-resin.pale-oak-output", 1, 1, 64);
+        int extractorOutput = configuredInt(cfg, "vanilla-resin.extractor-output", 1, 1, 64);
+        int resinClumpsPerRubber = configuredInt(cfg, "vanilla-resin.rubber-recipe-clumps", 4, 1, 64);
 
         SlimefunItemStack treeTap = new SlimefunItemStack(
                 "TREE_TAP",
                 Material.WOODEN_HOE,
                 "&6Tree Tap",
-                getLore("Resin", cfg.getInt("resin-chance.standard")));
+                getLore("Resin", standardResinChance));
         SlimefunItemStack reinforcedTreeTap = new SlimefunItemStack(
                 "REINFORCED_TREE_TAP",
                 Material.IRON_HOE,
                 "&6Reinforced Tree Tap",
-                getLore("Resin", cfg.getInt("resin-chance.reinforced")));
+                getLore("Resin", reinforcedResinChance));
         SlimefunItemStack diamondTreeTap = new SlimefunItemStack(
                 "DIAMOND_TREE_TAP",
                 Material.DIAMOND_HOE,
                 "&bDiamond Tree Tap",
-                getLore("Resin", cfg.getInt("resin-chance.diamond")));
+                getLore("Resin", diamondResinChance));
         SlimefunItemStack treeScraper = new SlimefunItemStack(
                 "TREE_SCRAPER",
                 Material.GOLDEN_SHOVEL,
                 "&bTree Scraper",
-                getLore("Amber", cfg.getInt("amber-chance")));
+                getLore("Amber", amberChance));
 
         clearAttributes(treeTap, reinforcedTreeTap, diamondTreeTap, treeScraper);
 
@@ -130,7 +134,7 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
         new TreeTool(
                         itemGroup,
                         treeTap,
-                        cfg.getInt("resin-chance.standard"),
+                        standardResinChance,
                         stickyResin,
                         paleOakResin,
                         new ItemStack[] {
@@ -143,7 +147,7 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
         new TreeTool(
                         itemGroup,
                         reinforcedTreeTap,
-                        cfg.getInt("resin-chance.reinforced"),
+                        reinforcedResinChance,
                         stickyResin,
                         paleOakResin,
                         new ItemStack[] {
@@ -156,7 +160,7 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
         new TreeTool(
                         itemGroup,
                         diamondTreeTap,
-                        cfg.getInt("resin-chance.diamond"),
+                        diamondResinChance,
                         stickyResin,
                         paleOakResin,
                         new ItemStack[] {
@@ -169,7 +173,7 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
         new TreeTool(
                         itemGroup,
                         treeScraper,
-                        cfg.getInt("amber-chance"),
+                        amberChance,
                         amber,
                         new ItemStack[] {
                             null, new ItemStack(Material.GOLD_INGOT), null,
@@ -410,14 +414,28 @@ public class TreeTaps extends JavaPlugin implements SlimefunAddon {
                 new ItemStack[] {new CustomItemStack(rubber, recipe.outputAmount())});
     }
 
-    private int clampStackAmount(int amount) {
-        return Math.max(1, Math.min(64, amount));
+    private int configuredInt(
+            FileConfiguration cfg,
+            String path,
+            int fallback,
+            int minimum,
+            int maximum) {
+        int configured = cfg.getInt(path, fallback);
+        int bounded = Math.max(minimum, Math.min(maximum, configured));
+
+        if (configured != bounded) {
+            getLogger().warning(
+                    "Config value '" + path + "'=" + configured + " is outside the supported range "
+                            + minimum + "-" + maximum + "; using " + bounded + " instead.");
+        }
+
+        return bounded;
     }
 
     private String[] getLore(String item, int chance) {
         return new String[] {
             "",
-            "&7Chance: &a" + Math.max(0, Math.min(100, chance)) + "%",
+            "&7Chance: &a" + chance + "%",
             "&eRight Click any Log &7to harvest " + item
         };
     }
