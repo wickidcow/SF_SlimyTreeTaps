@@ -20,7 +20,9 @@ First Slimefun Legacy release of the modernized SlimyTreeTaps fork.
 - Resin Extractors recognize Pale Oak and can produce vanilla Resin Clumps.
 - Rubber Factory accepts Resin Clumps, Resin Blocks, Resin Bricks, and Resin Bricks blocks.
 - Bulk vanilla-resin recipes preserve equivalent resin value and processing rate.
+- Extracted resin-equivalence calculations into tested balancing logic.
 - Added configuration for Pale Oak output, extractor output, and resin-to-rubber balance.
+- Out-of-range chance and stack-size settings are bounded safely and reported in the server log.
 
 ### Performance and safety
 
@@ -33,6 +35,7 @@ First Slimefun Legacy release of the modernized SlimyTreeTaps fork.
 - Hardened Magical Mirror item-frame interactions against duplicate interaction events.
 - Made Magical Mirror interaction state thread-safe for Folia-style region scheduling.
 - Routed mirror chat-input and teleport-completion callbacks through the player entity scheduler.
+- Mirror binding now targets the same hand that initiated the action and records the location where binding was started, preventing accidental rebinding after switching hands or moving while typing the name.
 - Invalid or corrupted mirror destination data, including non-finite coordinates, is handled safely instead of bubbling exceptions through the interaction event.
 - Failed or exceptional mirror teleports refund the consumed Ender Pearl while the player remains available.
 
@@ -45,5 +48,5 @@ First Slimefun Legacy release of the modernized SlimyTreeTaps fork.
 - Removed dependency on the old upstream auto-updater.
 - Updated GitHub Actions to current Node 24-based action releases.
 - CI now cancels superseded PR builds and publishes a raw JAR artifact.
-- Added JUnit coverage for the cached log mapping behavior.
+- Added JUnit coverage for cached log mappings and vanilla resin conversion balance.
 - Added tag-driven GitHub Releases with generated release notes and a raw JAR release asset.
