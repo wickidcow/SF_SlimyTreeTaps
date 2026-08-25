@@ -80,7 +80,12 @@ public class TreeTool extends SimpleSlimefunItem<ItemUseHandler> implements NotP
                 return;
             }
 
+            // Tree tapping changes a real world block. Report the old and new
+            // states through Dough so CoreProtect/LogBlock integrations can
+            // audit and roll back the change like a normal block action.
+            Slimefun.getProtectionManager().logAction(player, block, Interaction.BREAK_BLOCK);
             stripLog(block, stripped);
+            Slimefun.getProtectionManager().logAction(player, block, Interaction.PLACE_BLOCK);
 
             ItemStack drop = isPaleOak(original) && paleOakOutput != null
                     ? paleOakOutput.clone()
