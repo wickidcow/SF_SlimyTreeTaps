@@ -2,15 +2,14 @@ package io.github.thebusybiscuit.slimytreetaps;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import com.xzavier0722.mc.plugin.slimefun4.storage.util.StorageCacheUtils;
-
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.api.recipes.RecipeType;
@@ -51,12 +50,17 @@ public class TreeTool extends SimpleSlimefunItem<ItemUseHandler> implements NotP
 
     @Override
     public ItemUseHandler getItemHandler() {
-        return e -> e.getClickedBlock().ifPresent(block ->
-                harvest(e.getPlayer(), block, e.getClickedFace(), e.getItem()));
+        return event -> event.getClickedBlock().ifPresent(block ->
+                harvest(event.getPlayer(), block, event.getClickedFace(), event.getItem()));
     }
 
     private void harvest(Player player, Block block, BlockFace clickedFace, ItemStack tool) {
-        if (!isHarvestableLog(block)
+        Material original = block.getType();
+
+        // Keep the hot path cheap: cached material check first, then cached
+        // Slimefun occupancy, and only then the protection-provider lookup.
+        if (!LogCache.isTappable(original)
+                || StorageCacheUtils.hasSlimefunBlock(block.getLocation())
                 || !Slimefun.getProtectionManager().hasPermission(player, block, Interaction.BREAK_BLOCK)) {
             return;
         }
@@ -65,34 +69,28 @@ public class TreeTool extends SimpleSlimefunItem<ItemUseHandler> implements NotP
                 block.getLocation(), block.getBlockData().getSoundGroup().getHitSound(), 1.0F, 1.0F);
 
         if (ThreadLocalRandom.current().nextInt(100) < chance) {
-            Material stripped = getStrippedType(block.getType());
-
-            if (stripped != null) {
-                Material original = block.getType();
-                block.setType(stripped);
-
-                ItemStack drop = isPaleOak(original) && paleOakOutput != null
-                        ? paleOakOutput.clone()
-                        : output.clone();
-
-                block.getWorld().dropItem(
-                        block.getRelative(clickedFace).getLocation().add(0.5, 0.5, 0.5), drop);
+            Material stripped = LogCache.strippedVariant(original);
+            if (stripped == null) {
+                return;
             }
+
+            block.setType(stripped);
+
+            ItemStack drop = isPaleOak(original) && paleOakOutput != null
+                    ? paleOakOutput.clone()
+                    : output.clone();
+
+            Location dropLocation;
+            if (clickedFace == null) {
+                dropLocation = block.getLocation().add(0.5, 0.5, 0.5);
+            } else {
+                dropLocation = block.getRelative(clickedFace).getLocation().add(0.5, 0.5, 0.5);
+            }
+
+            block.getWorld().dropItem(dropLocation, drop);
         }
 
         damageItem(player, tool);
-    }
-
-    private boolean isHarvestableLog(Block block) {
-        return block != null
-                && Tag.LOGS.isTagged(block.getType())
-                && !block.getType().name().startsWith("STRIPPED_")
-                && getStrippedType(block.getType()) != null
-                && !StorageCacheUtils.hasSlimefunBlock(block.getLocation());
-    }
-
-    private Material getStrippedType(Material material) {
-        return Material.matchMaterial("STRIPPED_" + material.name());
     }
 
     static boolean isPaleOak(Material material) {
