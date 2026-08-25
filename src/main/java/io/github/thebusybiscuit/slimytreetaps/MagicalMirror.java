@@ -1,11 +1,11 @@
 package io.github.thebusybiscuit.slimytreetaps;
 
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -42,7 +42,7 @@ public class MagicalMirror extends SimpleSlimefunItem<ItemUseHandler> implements
     private final TreeTaps plugin;
     private final NamespacedKey mirrorLocation;
     private final Material mirrorMaterial;
-    private final Set<UUID> pendingInput = new HashSet<>();
+    private final Set<UUID> pendingInput = ConcurrentHashMap.newKeySet();
 
     public MagicalMirror(
             TreeTaps plugin,
@@ -58,9 +58,9 @@ public class MagicalMirror extends SimpleSlimefunItem<ItemUseHandler> implements
 
     @Override
     public ItemUseHandler getItemHandler() {
-        return e -> {
-            e.cancel();
-            Player player = e.getPlayer();
+        return event -> {
+            event.cancel();
+            Player player = event.getPlayer();
 
             if (!pendingInput.add(player.getUniqueId())) {
                 player.sendMessage(Component.text(
@@ -71,18 +71,29 @@ public class MagicalMirror extends SimpleSlimefunItem<ItemUseHandler> implements
             player.sendMessage(Component.text(
                     "Type a name in chat to bind this Magical Mirror to your current location.",
                     NamedTextColor.GREEN));
-            ChatUtils.awaitInput(player, name -> onNameInput(player, name));
+
+            UUID playerId = player.getUniqueId();
+            ChatUtils.awaitInput(player, name -> player.getScheduler().execute(
+                    plugin,
+                    () -> onNameInput(player, name),
+                    () -> pendingInput.remove(playerId),
+                    1L));
         };
     }
 
     private void onNameInput(Player player, String name) {
         pendingInput.remove(player.getUniqueId());
 
-        if (name == null || name.isBlank() || name.startsWith("/")) {
+        String cleanName = name == null ? "" : ChatUtils.removeColorCodes(name).trim();
+        if (cleanName.isBlank() || cleanName.startsWith("/")) {
             player.sendMessage(Component.text(
                     "Mirror binding cancelled. The name cannot be blank or start with '/'.",
                     NamedTextColor.RED));
             return;
+        }
+
+        if (cleanName.length() > 64) {
+            cleanName = cleanName.substring(0, 64);
         }
 
         ItemStack heldMirror = findHeldMirror(player);
@@ -93,7 +104,7 @@ public class MagicalMirror extends SimpleSlimefunItem<ItemUseHandler> implements
             return;
         }
 
-        setLocation(player, heldMirror, name, player.getLocation());
+        setLocation(player, heldMirror, cleanName, player.getLocation());
     }
 
     private ItemStack findHeldMirror(Player player) {
@@ -180,13 +191,7 @@ public class MagicalMirror extends SimpleSlimefunItem<ItemUseHandler> implements
         json.addProperty("yaw", location.getYaw());
 
         meta.getPersistentDataContainer().set(mirrorLocation, PersistentDataType.STRING, json.toString());
-
-        String cleanName = ChatUtils.removeColorCodes(name).trim();
-        if (cleanName.length() > 64) {
-            cleanName = cleanName.substring(0, 64);
-        }
-
-        meta.displayName(Component.text(cleanName, NamedTextColor.AQUA));
+        meta.displayName(Component.text(name, NamedTextColor.AQUA));
         item.setItemMeta(meta);
         player.sendMessage(Component.text("Magical Mirror location set.", NamedTextColor.GREEN));
     }
