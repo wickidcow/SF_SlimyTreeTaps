@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -73,15 +74,18 @@ public class MagicalMirror extends SimpleSlimefunItem<ItemUseHandler> implements
                     NamedTextColor.GREEN));
 
             UUID playerId = player.getUniqueId();
+            EquipmentSlot hand = event.getHand();
+            Location bindingLocation = player.getLocation().clone();
+
             ChatUtils.awaitInput(player, name -> player.getScheduler().execute(
                     plugin,
-                    () -> onNameInput(player, name),
+                    () -> onNameInput(player, name, hand, bindingLocation),
                     () -> pendingInput.remove(playerId),
                     1L));
         };
     }
 
-    private void onNameInput(Player player, String name) {
+    private void onNameInput(Player player, String name, EquipmentSlot hand, Location bindingLocation) {
         pendingInput.remove(player.getUniqueId());
 
         String cleanName = name == null ? "" : ChatUtils.removeColorCodes(name).trim();
@@ -96,25 +100,22 @@ public class MagicalMirror extends SimpleSlimefunItem<ItemUseHandler> implements
             cleanName = cleanName.substring(0, 64);
         }
 
-        ItemStack heldMirror = findHeldMirror(player);
+        ItemStack heldMirror = getMirrorInHand(player, hand);
         if (heldMirror == null) {
             player.sendMessage(Component.text(
-                    "Mirror binding cancelled because the Magical Mirror is no longer in your hand.",
+                    "Mirror binding cancelled because the Magical Mirror is no longer in the hand you used.",
                     NamedTextColor.RED));
             return;
         }
 
-        setLocation(player, heldMirror, cleanName, player.getLocation());
+        setLocation(player, heldMirror, cleanName, bindingLocation);
     }
 
-    private ItemStack findHeldMirror(Player player) {
-        ItemStack mainHand = player.getInventory().getItemInMainHand();
-        if (isMirrorItem(mainHand)) {
-            return mainHand;
-        }
-
-        ItemStack offHand = player.getInventory().getItemInOffHand();
-        return isMirrorItem(offHand) ? offHand : null;
+    private ItemStack getMirrorInHand(Player player, EquipmentSlot hand) {
+        ItemStack item = hand == EquipmentSlot.OFF_HAND
+                ? player.getInventory().getItemInOffHand()
+                : player.getInventory().getItemInMainHand();
+        return isMirrorItem(item) ? item : null;
     }
 
     void clearPendingInput(UUID uuid) {
