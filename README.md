@@ -26,13 +26,16 @@ Current work includes:
 - Hardened Magical Mirror interactions and teleport handling
 - Folia-safe mirror state tracking and entity-scheduler callbacks
 - Slimefun protection checks for tree harvesting and Magical Mirror item frames
+- CoreProtect/LogBlock-compatible logging for successful tree-tap block changes through Slimefun's protection logger layer
 - Cached log/stripped-log mappings for the tree-tapping hot path
+- Log-axis preservation when a tapped log becomes stripped
 - Modern Slimefun storage-cache checks instead of the legacy BlockStorage API
 - Pale Oak support
 - Vanilla `RESIN_CLUMP` integration
 - Pale Oak Resin Extractor recipes
 - Vanilla Resin Clumps, Resin Blocks, Resin Bricks, and Resin Bricks blocks as Rubber Factory inputs
 - Resin-value-preserving bulk recipes so compacted vanilla resin does not change production balance
+- JUnit coverage for the log-cache behavior
 - Existing SlimyTreeTaps item IDs and research IDs preserved
 
 ### Vanilla Resin integration
@@ -49,13 +52,19 @@ This integration can be disabled or rebalanced in `config.yml`.
 
 Tree harvesting and Magical Mirror item-frame use are checked through Slimefun's protection manager. This allows the addon to honor the protection integrations supplied by Slimefun Legacy, including supported Towny, WorldGuard, GriefPrevention, Lands, and similar protection providers.
 
-A denied Magical Mirror interaction is cancelled without rotating or removing the framed mirror.
+A denied Magical Mirror interaction is cancelled without rotating or removing the framed mirror. Successful tree tapping is also passed to Slimefun's protection logging layer, allowing supported CoreProtect and LogBlock installations to record the log-to-stripped-log change.
 
 ## Upgrading from older SlimyTreeTaps
 
 The Legacy fork intentionally preserves the original Slimefun item IDs, research IDs, plugin name, and Magical Mirror destination key. Existing SlimyTreeTaps items and bound mirrors are therefore expected to remain recognizable without an item migration.
 
 As with any addon replacement, back up the server before swapping JARs and test the upgrade on a copy of the world first.
+
+## Builds and releases
+
+Pull requests are compiled against the exact Slimefun Legacy 4.1.39 release JAR. CI publishes the built addon as a raw JAR artifact rather than wrapping it in another ZIP.
+
+Version tags such as `v1.0.0` build a matching `SF_SlimyTreeTaps-1.0.0.jar` and create or update the GitHub Release automatically.
 
 ## Original project
 
