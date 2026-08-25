@@ -25,6 +25,7 @@ Current work includes:
 - English-only source, configuration, and player-facing text
 - Hardened Magical Mirror interactions and teleport handling
 - Folia-safe mirror state tracking and entity-scheduler callbacks
+- Slimefun protection checks for tree harvesting and Magical Mirror item frames
 - Cached log/stripped-log mappings for the tree-tapping hot path
 - Modern Slimefun storage-cache checks instead of the legacy BlockStorage API
 - Pale Oak support
@@ -43,6 +44,18 @@ Pale Oak can instead produce Minecraft's vanilla **Resin Clumps**, which can be 
 The Rubber Factory accepts vanilla resin in all common storage/processed forms. Bulk conversions are calculated from the configured `rubber-recipe-clumps` value so Resin Blocks and Resin Bricks keep the same underlying resin value and production rate as loose Resin Clumps.
 
 This integration can be disabled or rebalanced in `config.yml`.
+
+## Protection support
+
+Tree harvesting and Magical Mirror item-frame use are checked through Slimefun's protection manager. This allows the addon to honor the protection integrations supplied by Slimefun Legacy, including supported Towny, WorldGuard, GriefPrevention, Lands, and similar protection providers.
+
+A denied Magical Mirror interaction is cancelled without rotating or removing the framed mirror.
+
+## Upgrading from older SlimyTreeTaps
+
+The Legacy fork intentionally preserves the original Slimefun item IDs, research IDs, plugin name, and Magical Mirror destination key. Existing SlimyTreeTaps items and bound mirrors are therefore expected to remain recognizable without an item migration.
+
+As with any addon replacement, back up the server before swapping JARs and test the upgrade on a copy of the world first.
 
 ## Original project
 
