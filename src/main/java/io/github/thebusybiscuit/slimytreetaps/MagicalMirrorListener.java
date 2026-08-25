@@ -8,11 +8,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+
+import io.github.thebusybiscuit.slimefun4.implementation.Slimefun;
+import io.github.thebusybiscuit.slimefun4.libraries.dough.protection.Interaction;
 
 public class MagicalMirrorListener implements Listener {
 
@@ -24,7 +28,7 @@ public class MagicalMirrorListener implements Listener {
         this.mirror = mirror;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInteract(PlayerInteractEntityEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) {
             return;
@@ -39,14 +43,23 @@ public class MagicalMirrorListener implements Listener {
             return;
         }
 
-        event.setCancelled(true);
-
-        if (isDuplicateThisTick(event.getPlayer(), frame)) {
+        Player player = event.getPlayer();
+        if (!Slimefun.getProtectionManager()
+                .hasPermission(player, frame.getLocation(), Interaction.INTERACT_ENTITY)) {
+            // Prevent rotating/removing the mirror even when a protection plugin
+            // denied the custom teleport interaction.
+            event.setCancelled(true);
             return;
         }
 
-        if (mirror.canUse(event.getPlayer(), true)) {
-            mirror.teleport(event.getPlayer(), item);
+        event.setCancelled(true);
+
+        if (isDuplicateThisTick(player, frame)) {
+            return;
+        }
+
+        if (mirror.canUse(player, true)) {
+            mirror.teleport(player, item);
         }
     }
 
