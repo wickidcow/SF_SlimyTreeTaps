@@ -1,7 +1,7 @@
 name: SlimyTreeTaps
 version: ${project.version}
-author: TheBusyBiscuit
-description: Adds tree tapping, rubber, and an alternative plastic production route for Slimefun Legacy.
+authors: [TheBusyBiscuit, wickidcow]
+description: Modernized SlimyTreeTaps for Slimefun Legacy with tree tapping, rubber, vanilla resin integration, and an alternative plastic production route.
 website: https://github.com/wickidcow/SF_SlimyTreeTaps
 
 main: io.github.thebusybiscuit.slimytreetaps.TreeTaps
