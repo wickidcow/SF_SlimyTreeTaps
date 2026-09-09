@@ -3,15 +3,18 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.github.thebusybiscuit</groupId>
-    <artifactId>SlimyTreeTaps</artifactId>
-    <version>UNOFFICIAL</version>
+    <groupId>io.github.wickidcow</groupId>
+    <artifactId>SF_SlimyTreeTaps</artifactId>
+    <version>1.0.0</version>
 
     <properties>
-        <maven.compiler.release>25</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <paper.version>26.1.2.build.74-stable</paper.version>
-        <slimefun.version>RC-37</slimefun.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <paper.version>[26.2.build,)</paper.version>
+        <slimefun.groupId>com.github.SlimefunGuguProject</slimefun.groupId>
+        <slimefun.artifactId>Slimefun4</slimefun.artifactId>
+        <slimefun.version>2025.1</slimefun.version>
         <bstats.version>3.2.1</bstats.version>
     </properties>
 
@@ -21,17 +24,13 @@
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
     <build>
-        <finalName>${project.name} v${project.version}</finalName>
+        <finalName>SF_SlimyTreeTaps${project.version}</finalName>
         <defaultGoal>clean package</defaultGoal>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
 
@@ -39,14 +38,12 @@
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
-
                 <includes>
                     <include>*</include>
                 </includes>
             </resource>
             <resource>
                 <directory>${basedir}</directory>
-
                 <includes>
                     <include>LICENSE</include>
                 </includes>
@@ -64,29 +61,25 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.6.2</version>
-
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-
-                    <!-- 将依赖重定位进输出 jar，避免和其他插件冲突。 -->
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
                             <shadedPattern>io.github.thebusybiscuit.slimytreetaps.bstats</shadedPattern>
                         </relocation>
                     </relocations>
-
-                    <!-- 排除 shaded 依赖中不需要的元数据文件。 -->
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
-                                <exclude>META-INF/*</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
                             </excludes>
                         </filter>
                     </filters>
                 </configuration>
-
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -108,8 +101,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.Slimefun</groupId>
-            <artifactId>Slimefun4</artifactId>
+            <groupId>${slimefun.groupId}</groupId>
+            <artifactId>${slimefun.artifactId}</artifactId>
             <version>${slimefun.version}</version>
             <scope>provided</scope>
             <exclusions>
@@ -121,10 +114,6 @@
                     <groupId>org.spigotmc</groupId>
                     <artifactId>spigot-api</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>io.github.baked-libs</groupId>
-                    <artifactId>dough-api</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
@@ -132,7 +121,6 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>${bstats.version}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
