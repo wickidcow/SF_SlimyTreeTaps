@@ -1,17 +1,13 @@
-# SlimyTreeTaps 配置
+# SlimyTreeTaps configuration
 
-options:
-  # 开发构建会自动检查并安装更新。
-  auto-update: true
-
-# 使用树木刮刀时获得琥珀的概率，单位为百分比。
+# Chance, in percent, to obtain amber with a Tree Scraper.
 amber-chance: 16
 
-# 不同树木龙头采集树脂的概率，单位为百分比。
+# Chance, in percent, for each Tree Tap tier to collect resin.
 resin-chance:
-  # 普通树木龙头
+  # Standard Tree Tap
   standard: 12
-  # 强化树木龙头
+  # Reinforced Tree Tap
   reinforced: 24
-  # 钻石树木龙头
+  # Diamond Tree Tap
   diamond: 32

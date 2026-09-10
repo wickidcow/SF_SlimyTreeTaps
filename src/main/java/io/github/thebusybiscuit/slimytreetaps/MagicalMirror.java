@@ -47,92 +47,87 @@ public class MagicalMirror extends SimpleSlimefunItem<ItemUseHandler> implements
     public ItemUseHandler getItemHandler() {
         return e -> {
             e.cancel();
-            e.getPlayer().sendMessage(Component.text("请为这个位置命名！直接在聊天栏输入名称。", NamedTextColor.GREEN));
+            e.getPlayer().sendMessage(Component.text("Name this location by typing a name in chat.", NamedTextColor.GREEN));
             ChatUtils.awaitInput(e.getPlayer(), name -> setLocation(e.getPlayer(), e.getItem(), name, e.getPlayer().getLocation()));
         };
     }
 
-    public void teleport(Player p, ItemStack item) {
-        if (!p.getInventory().containsAtLeast(ENDER_PEARL.clone(), 1)) {
-            p.sendMessage(Component.text("你至少需要一颗末影珍珠才能使用魔法镜！", NamedTextColor.RED));
+    public void teleport(Player player, ItemStack item) {
+        if (!player.getInventory().containsAtLeast(ENDER_PEARL, 1)) {
+            player.sendMessage(Component.text("You need at least one Ender Pearl to use the Magical Mirror.", NamedTextColor.RED));
             return;
         }
 
         Optional<Location> location = getLocation(item);
-
-        if (location.isPresent()) {
-            if (p.getInventory().removeItem(ENDER_PEARL.clone()).isEmpty()) {
-                p.teleportAsync(location.get()).thenAccept(hasTeleported -> p.getScheduler().execute(plugin, () -> {
-                    if (!p.isValid()) {
-                        return;
-                    }
-
-                    if (hasTeleported.booleanValue()) {
-                        p.showTitle(Title.title(getMirrorTitle(item), Component.text("- 魔法镜 -", NamedTextColor.GRAY), MIRROR_TITLE_TIMES));
-                    } else {
-                        p.getInventory().addItem(ENDER_PEARL.clone());
-                        p.sendMessage(Component.text("传送已取消！", NamedTextColor.RED));
-                    }
-                }, () -> { }, 1L));
-            } else {
-                p.sendMessage(Component.text("你至少需要一颗末影珍珠才能传送！", NamedTextColor.RED));
-            }
-        } else {
-            p.sendMessage(Component.text("这个魔法镜似乎没有有效目的地！", NamedTextColor.RED));
+        if (location.isEmpty()) {
+            player.sendMessage(Component.text("This Magical Mirror does not have a valid destination.", NamedTextColor.RED));
+            return;
         }
+
+        if (!player.getInventory().removeItem(ENDER_PEARL.clone()).isEmpty()) {
+            player.sendMessage(Component.text("You need at least one Ender Pearl to teleport.", NamedTextColor.RED));
+            return;
+        }
+
+        player.teleportAsync(location.get()).thenAccept(hasTeleported -> player.getScheduler().execute(plugin, () -> {
+            if (!player.isValid()) {
+                return;
+            }
+
+            if (hasTeleported) {
+                player.showTitle(Title.title(getMirrorTitle(item), Component.text("- Magical Mirror -", NamedTextColor.GRAY), MIRROR_TITLE_TIMES));
+            } else {
+                player.getInventory().addItem(ENDER_PEARL.clone());
+                player.sendMessage(Component.text("Teleportation was cancelled.", NamedTextColor.RED));
+            }
+        }, () -> { }, 1L));
     }
 
-    private void setLocation(Player p, ItemStack item, String name, Location l) {
+    private void setLocation(Player player, ItemStack item, String name, Location location) {
         ItemMeta meta = item.getItemMeta();
 
         JsonObject json = new JsonObject();
-        json.addProperty("world", l.getWorld().getUID().toString());
-        json.addProperty("x", l.getX());
-        json.addProperty("y", l.getY());
-        json.addProperty("z", l.getZ());
-        json.addProperty("pitch", l.getPitch());
-        json.addProperty("yaw", l.getYaw());
+        json.addProperty("world", location.getWorld().getUID().toString());
+        json.addProperty("x", location.getX());
+        json.addProperty("y", location.getY());
+        json.addProperty("z", location.getZ());
+        json.addProperty("pitch", location.getPitch());
+        json.addProperty("yaw", location.getYaw());
 
         meta.getPersistentDataContainer().set(mirrorLocation, PersistentDataType.STRING, json.toString());
         meta.displayName(Component.text(ChatUtils.removeColorCodes(name), NamedTextColor.AQUA));
         item.setItemMeta(meta);
-        p.sendMessage(Component.text("已成功设置魔法镜位置！", NamedTextColor.GREEN));
+        player.sendMessage(Component.text("Magical Mirror destination saved.", NamedTextColor.GREEN));
     }
 
     private Optional<Location> getLocation(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
         String data = meta.getPersistentDataContainer().get(mirrorLocation, PersistentDataType.STRING);
-
-        if (data != null) {
-            JsonObject json = JsonParser.parseString(data).getAsJsonObject();
-            UUID uuid = UUID.fromString(json.get("world").getAsString());
-            World world = Bukkit.getWorld(uuid);
-
-            if (world != null) {
-                double x = json.get("x").getAsDouble();
-                double y = json.get("y").getAsDouble();
-                double z = json.get("z").getAsDouble();
-                float pitch = json.get("pitch").getAsFloat();
-                float yaw = json.get("yaw").getAsFloat();
-                Location loc = new Location(world, x, y, z, yaw, pitch);
-
-                return Optional.of(loc);
-            } else {
-                return Optional.empty();
-            }
-        } else {
+        if (data == null) {
             return Optional.empty();
         }
+
+        JsonObject json = JsonParser.parseString(data).getAsJsonObject();
+        UUID uuid = UUID.fromString(json.get("world").getAsString());
+        World world = Bukkit.getWorld(uuid);
+        if (world == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new Location(
+                world,
+                json.get("x").getAsDouble(),
+                json.get("y").getAsDouble(),
+                json.get("z").getAsDouble(),
+                json.get("yaw").getAsFloat(),
+                json.get("pitch").getAsFloat()));
     }
 
     private Component getMirrorTitle(ItemStack item) {
         ItemMeta meta = item.getItemMeta();
-
         if (meta != null && meta.hasDisplayName()) {
             return meta.displayName();
         }
-
-        return Component.text("魔法镜", NamedTextColor.AQUA);
+        return Component.text("Magical Mirror", NamedTextColor.AQUA);
     }
-
 }

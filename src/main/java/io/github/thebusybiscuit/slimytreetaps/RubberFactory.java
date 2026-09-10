@@ -17,7 +17,7 @@ public abstract class RubberFactory extends AContainer implements RecipeDisplayI
 
     @Override
     public String getInventoryTitle() {
-        return "橡胶工厂";
+        return "Rubber Factory";
     }
 
     @Override
@@ -34,5 +34,4 @@ public abstract class RubberFactory extends AContainer implements RecipeDisplayI
     public int getCapacity() {
         return 256;
     }
-
 }
