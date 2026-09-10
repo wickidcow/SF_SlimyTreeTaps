@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.wickidcow</groupId>
     <artifactId>SF_SlimyTreeTaps</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
@@ -14,7 +14,7 @@
         <paper.version>[26.2.build,)</paper.version>
         <slimefun.groupId>com.github.SlimefunGuguProject</slimefun.groupId>
         <slimefun.artifactId>Slimefun4</slimefun.artifactId>
-        <slimefun.version>2025.1</slimefun.version>
+        <slimefun.version>2026.1</slimefun.version>
         <bstats.version>3.2.1</bstats.version>
     </properties>
 
@@ -31,32 +31,25 @@
 
     <build>
         <finalName>SF_SlimyTreeTaps${project.version}</finalName>
-        <defaultGoal>clean package</defaultGoal>
+        <defaultGoal>clean verify</defaultGoal>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
-
         <resources>
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
-                <includes>
-                    <include>*</include>
-                </includes>
             </resource>
             <resource>
                 <directory>${basedir}</directory>
-                <includes>
-                    <include>LICENSE</include>
-                </includes>
+                <filtering>false</filtering>
+                <includes><include>LICENSE</include></includes>
             </resource>
         </resources>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.15.0</version>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -83,9 +76,7 @@
                 <executions>
                     <execution>
                         <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
+                        <goals><goal>shade</goal></goals>
                     </execution>
                 </executions>
             </plugin>
@@ -99,7 +90,6 @@
             <version>${paper.version}</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>${slimefun.groupId}</groupId>
             <artifactId>${slimefun.artifactId}</artifactId>
@@ -116,7 +106,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>

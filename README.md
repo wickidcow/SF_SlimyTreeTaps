@@ -1,32 +1,44 @@
-# SlimyTreeTaps
-SlimyTreeTaps 是一个 [Slimefun4](https://github.com/Slimefun/Slimefun4/) 附属插件。<br>
-你需要先安装 Slimefun4，这个插件才能正常工作。
+# SF_SlimyTreeTaps
 
-SlimyTreeTaps 的灵感主要来自知名模组 [IndustrialCraft 2](https://www.curseforge.com/minecraft/mc-mods/industrial-craft)。
-它为 Slimefun 添加了树木龙头。
-对任意原木使用树木龙头即可获得树脂，并进一步加工成橡胶和塑料。<br>
-这为 Slimefun 提供了一条替代的塑料获取路线。
+A maintained fork of SlimyTreeTaps for modern Slimefun and Minecraft 1.21.11+ servers.
 
-这个附属插件还会为游戏加入一些魔法元素，例如琥珀、魔法镜以及其他琥珀相关物品。
+SlimyTreeTaps adds tree taps inspired by classic industrial-tech mods. Use a tree tap on supported logs to collect resin, then process that resin into rubber and plastic. The maintained fork also supports modern vanilla resin behavior where applicable and preserves the addon's amber and magic-themed content.
 
-## 下载 SlimyTreeTaps
-你可以在这里下载 SlimyTreeTaps：[开发构建](https://thebusybiscuit.github.io/builds/TheBusyBiscuit/SlimyTreeTaps/master/)
+## Support
 
-<p align="center">
-  <a href="https://thebusybiscuit.github.io/builds/TheBusyBiscuit/SlimyTreeTaps/master/">
-    <img src="https://thebusybiscuit.github.io/builds/TheBusyBiscuit/SlimyTreeTaps/master/badge.svg" alt="构建服务器"/>
-  </a>
-</p>
+- Minecraft 1.21.11+
+- Paper 26.2+ production baseline
+- Purpur, Folia and Leaf compatibility targets
+- Slimefun Legacy is the primary target
+- Slimefun United is a required compatibility target
+- Slimefun Gugu and original Slimefun4 are compatibility-tested targets where their APIs remain compatible
 
-## Discord
-你可以在 Discord 上找到 Slimefun 社区！
-点击下方徽章即可加入服务器，提出建议、问题，或参与和本插件相关的讨论。
+The maintained fork keeps source and bundled resources English-only and avoids external Slimefun utility-library dependencies.
 
-<p align="center">
-  <a href="https://discord.gg/slimefun">
-    <img src="https://discordapp.com/api/guilds/565557184348422174/widget.png?style=banner3" alt="Discord 邀请"/>
-  </a>
-</p>
+## Features
 
-## 开源
-本项目是开源项目，并基于 [MIT 许可证](https://github.com/Slimefun-Reloaded/SlimyTreeTaps/blob/master/LICENSE) 授权。
+- Tree taps and resin collection
+- Rubber production
+- Alternative plastic production path
+- Vanilla resin integration for modern Minecraft versions
+- Amber and related magic-themed items
+
+## Build
+
+Built with Java 25 while targeting Java 21 bytecode. Release JARs follow the maintained-addon naming convention:
+
+`SF_SlimyTreeTaps<version>.jar`
+
+## Installation
+
+1. Install a supported Slimefun implementation.
+2. Place the latest `SF_SlimyTreeTaps` JAR in your server's `plugins` folder.
+3. Restart the server.
+
+## Maintainers
+
+Original project by TheBusyBiscuit. Modern maintained fork by `wickidcow`.
+
+## License
+
+MIT. See `LICENSE`.
