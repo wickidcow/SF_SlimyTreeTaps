@@ -1,7 +1,7 @@
 name: SlimyTreeTaps
 version: ${project.version}
 authors: [TheBusyBiscuit, wickidcow]
-description: Maintained tree tapping, resin, rubber and alternative plastic production addon for Minecraft 1.21.11+ and modern Slimefun servers.
+description: Maintained SlimyTreeTaps addon for Slimefun Legacy on Minecraft 1.21.11+ and modern Paper-family servers.
 website: https://github.com/wickidcow/SF_SlimyTreeTaps
 main: io.github.thebusybiscuit.slimytreetaps.TreeTaps
 depend: [Slimefun]
