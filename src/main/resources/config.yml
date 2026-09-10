@@ -7,7 +7,26 @@ amber-chance: 16
 resin-chance:
   # Standard Tree Tap
   standard: 12
+  # Copper Tree Tap - Minecraft 1.21.9+ copper equipment tier
+  copper: 18
   # Reinforced Tree Tap
   reinforced: 24
   # Diamond Tree Tap
   diamond: 32
+
+# Vanilla resin integration for modern Minecraft.
+# Pale Oak is the natural bridge between vanilla Resin and SlimyTreeTaps.
+vanilla-resin:
+  enabled: true
+
+  # Number of vanilla Resin Clumps dropped when a Pale Oak log is successfully tapped.
+  # Values are clamped to a valid stack size (1-64).
+  pale-oak-output: 1
+
+  # Number of Resin Clumps produced by a Resin Extractor from Pale Oak.
+  # Values are clamped to a valid stack size (1-64).
+  extractor-output: 1
+
+  # Resin-equivalent cost of one Rubber in the Rubber Factory.
+  # Resin Clumps, Resin Blocks, Resin Bricks and Resin Bricks blocks preserve the same value.
+  rubber-recipe-clumps: 4
