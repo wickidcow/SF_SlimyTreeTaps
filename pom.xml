@@ -6,6 +6,21 @@
     <groupId>io.github.wickidcow</groupId>
     <artifactId>SF_SlimyTreeTaps</artifactId>
     <version>1.0.2</version>
+    <name>SF_SlimyTreeTaps</name>
+    <description>Maintained SlimyTreeTaps addon for Slimefun Legacy on modern Paper servers.</description>
+    <url>https://github.com/wickidcow/SF_SlimyTreeTaps</url>
+    <licenses>
+        <license>
+            <name>GNU General Public License v3.0 - maintained distribution</name>
+            <url>https://github.com/wickidcow/Slimefun-Legacy/blob/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>MIT License - upstream SlimyTreeTaps portions</name>
+            <url>https://github.com/wickidcow/SF_SlimyTreeTaps/blob/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
