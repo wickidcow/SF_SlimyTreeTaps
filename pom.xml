@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.wickidcow</groupId>
     <artifactId>SF_SlimyTreeTaps</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>SF_SlimyTreeTaps</name>
-    <description>Maintained SlimyTreeTaps addon for Slimefun Legacy on modern Paper servers.</description>
+    <description>Maintained SlimyTreeTaps addon with modern vanilla resin and copper-tier support for Slimefun Legacy.</description>
     <url>https://github.com/wickidcow/SF_SlimyTreeTaps</url>
     <licenses>
         <license>
