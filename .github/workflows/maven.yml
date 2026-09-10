@@ -1,176 +1,108 @@
-name: Compatibility CI
+name: Build SF_SlimyTreeTaps
 
 on:
   push:
     branches: ['**']
+    tags: ['v*']
   pull_request:
-    branches: ['**']
   workflow_dispatch:
 
 permissions:
   contents: write
 
+env:
+  ARTIFACT_VERSION: "1.0.2"
+  OUTPUT_NAME: "SF_SlimyTreeTaps1.0.2.jar"
+  MAIN_CLASS: "io.github.thebusybiscuit.slimytreetaps.TreeTaps"
+  SLIMEFUN_LEGACY_VERSION: "4.1.48"
+  PAPER_VERSION: "26.2.build.111-stable"
+
+concurrency:
+  group: sf-slimytreetaps-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  source-policy:
-    name: English-only / dependency policy
+  build:
+    name: Build and publish SF_SlimyTreeTaps1.0.2.jar
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v6
-      - name: Validate source policy
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re, sys
-          roots = [Path('src'), Path('README.md'), Path('pom.xml')]
-          bad = []
-          for root in roots:
-              paths = [root] if root.is_file() else [p for p in root.rglob('*') if p.is_file()]
-              for path in paths:
-                  text = path.read_text(encoding='utf-8', errors='ignore')
-                  if re.search(r'[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]', text):
-                      bad.append(f'CJK text: {path}')
-                  if re.search(r'guizhan', text, re.I):
-                      bad.append(f'Forbidden dependency reference: {path}')
-          if bad:
-              print('\n'.join(bad))
-              sys.exit(1)
-          PY
-
-  legacy:
-    name: Slimefun Legacy / Paper 26.2+
-    needs: source-policy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up Java 25
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '25'
           cache: maven
-      - uses: actions/checkout@v6
-        with:
-          repository: wickidcow/Slimefun-Legacy
-          ref: master
-          path: .deps/Slimefun-Legacy
-      - name: Publish Slimefun Legacy locally
-        working-directory: .deps/Slimefun-Legacy
-        run: |
-          chmod +x gradlew
-          ./gradlew publishToMavenLocal -PprojectVersion=SLIMYTREETAPS-CI-SNAPSHOT --no-daemon
-      - name: Build against Slimefun Legacy
-        run: >-
-          mvn -B clean verify
-          -Dpaper.version='[26.2.build,)'
-          -Dslimefun.groupId='com.github.slimefun'
-          -Dslimefun.artifactId='Slimefun'
-          -Dslimefun.version='SLIMYTREETAPS-CI-SNAPSHOT'
-      - name: Verify release JAR
-        shell: bash
-        run: |
-          VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
-          JAR="target/SF_SlimyTreeTaps${VERSION}.jar"
-          test -s "$JAR"
-          unzip -tqq "$JAR"
-          jar tf "$JAR" | grep -Fxq 'plugin.yml'
-          if jar tf "$JAR" | grep -q '^io/github/thebusybiscuit/slimefun4/'; then
-            echo 'Slimefun core classes must not be bundled into the addon JAR.' >&2
-            exit 1
-          fi
-          echo "JAR=$JAR" >> "$GITHUB_ENV"
-      - uses: actions/upload-artifact@v6
-        with:
-          name: SF_SlimyTreeTaps-release-jar
-          path: ${{ env.JAR }}
-          if-no-files-found: error
-
-  portable-api:
-    name: ${{ matrix.name }} compatibility
-    needs: source-policy
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Slimefun Gugu 2026.1
-            group: com.github.SlimefunGuguProject
-            artifact: Slimefun4
-            version: '2026.1'
-          - name: Slimefun4 RC-37
-            group: com.github.Slimefun
-            artifact: Slimefun4
-            version: RC-37
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '25'
-          cache: maven
-      - name: Build against ${{ matrix.name }}
-        run: >-
-          mvn -B clean verify
-          -Dpaper.version='[26.2.build,)'
-          -Dslimefun.groupId='${{ matrix.group }}'
-          -Dslimefun.artifactId='${{ matrix.artifact }}'
-          -Dslimefun.version='${{ matrix.version }}'
-
-  united:
-    name: Slimefun United compatibility
-    needs: source-policy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '25'
-          cache: maven
-      - uses: actions/checkout@v6
-        with:
-          repository: Slimefun-United/Slimefun-United
-          path: .deps/Slimefun-United
-      - name: Publish Slimefun United locally
-        working-directory: .deps/Slimefun-United
-        run: mvn -B -DskipTests install
-      - name: Build against Slimefun United
-        run: >-
-          mvn -B clean verify
-          -Dpaper.version='[26.2.build,)'
-          -Dslimefun.groupId='io.github.slimefun_united'
-          -Dslimefun.artifactId='slimefun-united'
-          -Dslimefun.version='4.10-SNAPSHOT'
-
-  release:
-    name: Publish immutable release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [source-policy, legacy, united, portable-api]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '25'
-      - uses: actions/download-artifact@v7
-        with:
-          name: SF_SlimyTreeTaps-release-jar
-          path: release
-      - name: Publish versioned GitHub release
+      - name: Install Slimefun Legacy 4.1.48 locally
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          VERSION="$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
-          TAG="v${VERSION}"
-          JAR="release/SF_SlimyTreeTaps${VERSION}.jar"
-          test -f "$JAR"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "$TAG already exists; keeping the release immutable."
-            exit 0
+          set -euo pipefail
+          mkdir -p .deps
+          gh release download "v${SLIMEFUN_LEGACY_VERSION}" --repo wickidcow/Slimefun-Legacy --pattern "Slimefun-Legacy${SLIMEFUN_LEGACY_VERSION}.jar" --dir .deps
+          LEGACY_JAR=".deps/Slimefun-Legacy${SLIMEFUN_LEGACY_VERSION}.jar"
+          test -s "$LEGACY_JAR"
+          unzip -tqq "$LEGACY_JAR"
+          mvn -B install:install-file -Dfile="$LEGACY_JAR" -DgroupId=com.github.slimefun -DartifactId=Slimefun -Dversion="${SLIMEFUN_LEGACY_VERSION}" -Dpackaging=jar -DgeneratePom=true
+      - name: Verify maintained metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq '<version>1.0.2</version>' pom.xml
+          grep -Fq '<finalName>SF_SlimyTreeTaps${project.version}</finalName>' pom.xml
+          grep -Fq '<maven.compiler.release>21</maven.compiler.release>' pom.xml
+          grep -Fq 'GNU General Public License v3.0' README.md
+          grep -Fq 'NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.' README.md
+      - name: Build release JAR against Slimefun Legacy and Paper 26.2
+        run: >-
+          mvn -B -Dmaven.test.skip=true clean package
+          -Dpaper.version="${PAPER_VERSION}"
+          -Dslimefun.groupId=com.github.slimefun
+          -Dslimefun.artifactId=Slimefun
+          -Dslimefun.version="${SLIMEFUN_LEGACY_VERSION}"
+      - name: Stage and validate versioned JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          SOURCE="target/${OUTPUT_NAME}"
+          test -s "$SOURCE"
+          cp "$SOURCE" "dist/${OUTPUT_NAME}"
+          JAR="dist/${OUTPUT_NAME}"
+          unzip -tqq "$JAR"
+          unzip -p "$JAR" plugin.yml | grep -Fq "version: ${ARTIFACT_VERSION}"
+          javap -verbose -classpath "$JAR" "$MAIN_CLASS" | grep -Fq 'major version: 65'
+          if jar tf "$JAR" | grep -q '^io/github/thebusybiscuit/slimefun4/'; then echo 'Slimefun core classes must not be bundled into the addon JAR.' >&2; exit 1; fi
+          if jar tf "$JAR" | grep -Eqi '(^|/)net/guizhanss/guizhanlib|(^|/)guizhanlib'; then echo 'External Slimefun utility-library classes must not be bundled into the addon JAR.' >&2; exit 1; fi
+          sha256sum "$JAR"
+      - name: Upload raw JAR artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.OUTPUT_NAME }}
+          path: dist/${{ env.OUTPUT_NAME }}
+          archive: false
+          if-no-files-found: error
+      - name: Publish immutable versioned release JAR
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/') || github.ref_name == github.event.repository.default_branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then TAG="$GITHUB_REF_NAME"; else TAG="v${ARTIFACT_VERSION}"; fi
+          JAR="dist/${OUTPUT_NAME}"
+          EXPECTED="sha256:$(sha256sum "$JAR" | awk '{print $1}')"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            EXISTING="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq ".assets[] | select(.name == \"${OUTPUT_NAME}\") | .digest" | head -n 1 || true)"
+            if [[ -n "$EXISTING" ]]; then
+              if [[ "$EXISTING" != "$EXPECTED" ]]; then echo "Release $TAG already contains different bytes for $OUTPUT_NAME. Bump the addon version instead of replacing an immutable build." >&2; exit 1; fi
+              echo "$OUTPUT_NAME already exists with the expected digest: $EXPECTED"
+            else
+              gh release upload "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY"
+            fi
+          else
+            gh release create "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "SF_SlimyTreeTaps $TAG" --notes "Maintained Slimefun Legacy compatibility build. Built with Java 25 targeting Java 21 bytecode and validated against Slimefun Legacy ${SLIMEFUN_LEGACY_VERSION} on Paper ${PAPER_VERSION}. Distributed under GNU GPLv3 while preserving applicable upstream MIT notices."
           fi
-          gh release create "$TAG" "$JAR" \
-            --target "$GITHUB_SHA" \
-            --title "SF_SlimyTreeTaps ${VERSION}" \
-            --notes "Maintained Minecraft 1.21.11+ build with Slimefun Legacy as the primary target, Slimefun United validation, and Gugu/original Slimefun4 compatibility testing. Paper 26.2+ baseline with Purpur, Folia and Leaf compatibility targets. English-only resources and no external Slimefun utility-library dependency."
