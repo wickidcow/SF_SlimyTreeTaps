@@ -5,28 +5,20 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.wickidcow</groupId>
     <artifactId>SF_SlimyTreeTaps</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <name>SF_SlimyTreeTaps</name>
     <description>Maintained SlimyTreeTaps addon with modern vanilla resin and copper-tier support for Slimefun Legacy.</description>
     <url>https://github.com/wickidcow/SF_SlimyTreeTaps</url>
     <licenses>
-        <license>
-            <name>GNU General Public License v3.0 - maintained distribution</name>
-            <url>https://github.com/wickidcow/Slimefun-Legacy/blob/master/LICENSE</url>
-            <distribution>repo</distribution>
-        </license>
-        <license>
-            <name>MIT License - upstream SlimyTreeTaps portions</name>
-            <url>https://github.com/wickidcow/SF_SlimyTreeTaps/blob/master/LICENSE</url>
-            <distribution>repo</distribution>
-        </license>
+        <license><name>GNU General Public License v3.0 - maintained distribution</name><url>https://github.com/wickidcow/Slimefun-Legacy/blob/master/LICENSE</url><distribution>repo</distribution></license>
+        <license><name>MIT License - upstream SlimyTreeTaps portions</name><url>https://github.com/wickidcow/SF_SlimyTreeTaps/blob/master/LICENSE</url><distribution>repo</distribution></license>
     </licenses>
 
     <properties>
         <maven.compiler.release>21</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <paper.version>[26.2.build,)</paper.version>
+        <paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>
         <slimefun.groupId>com.github.SlimefunGuguProject</slimefun.groupId>
         <slimefun.artifactId>Slimefun4</slimefun.artifactId>
         <slimefun.version>2026.1</slimefun.version>
@@ -34,14 +26,8 @@
     </properties>
 
     <repositories>
-        <repository>
-            <id>paper-repo</id>
-            <url>https://repo.papermc.io/repository/maven-public/</url>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
+        <repository><id>paper-repo</id><url>https://repo.papermc.io/repository/maven-public/</url></repository>
+        <repository><id>jitpack.io</id><url>https://jitpack.io</url></repository>
     </repositories>
 
     <build>
@@ -49,82 +35,29 @@
         <defaultGoal>clean verify</defaultGoal>
         <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
         <resources>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>${basedir}</directory>
-                <filtering>false</filtering>
-                <includes><include>LICENSE</include></includes>
-            </resource>
+            <resource><directory>${basedir}/src/main/resources</directory><filtering>true</filtering></resource>
+            <resource><directory>${basedir}</directory><filtering>false</filtering><includes><include>LICENSE</include></includes></resource>
         </resources>
         <plugins>
+            <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.15.0</version><configuration><release>${maven.compiler.release}</release></configuration></plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.15.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.2</version>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-shade-plugin</artifactId><version>3.6.2</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.bstats</pattern>
-                            <shadedPattern>io.github.thebusybiscuit.slimytreetaps.bstats</shadedPattern>
-                        </relocation>
-                    </relocations>
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>META-INF/*.SF</exclude>
-                                <exclude>META-INF/*.DSA</exclude>
-                                <exclude>META-INF/*.RSA</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
+                    <relocations><relocation><pattern>org.bstats</pattern><shadedPattern>io.github.thebusybiscuit.slimytreetaps.bstats</shadedPattern></relocation></relocations>
+                    <filters><filter><artifact>*:*</artifact><excludes><exclude>META-INF/*.SF</exclude><exclude>META-INF/*.DSA</exclude><exclude>META-INF/*.RSA</exclude></excludes></filter></filters>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>shade</goal></goals>
-                    </execution>
-                </executions>
+                <executions><execution><phase>package</phase><goals><goal>shade</goal></goals></execution></executions>
             </plugin>
         </plugins>
     </build>
 
     <dependencies>
+        <dependency><groupId>io.papermc.paper</groupId><artifactId>paper-api</artifactId><version>${paper.version}</version><scope>provided</scope></dependency>
         <dependency>
-            <groupId>io.papermc.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>${paper.version}</version>
-            <scope>provided</scope>
+            <groupId>${slimefun.groupId}</groupId><artifactId>${slimefun.artifactId}</artifactId><version>${slimefun.version}</version><scope>provided</scope>
+            <exclusions><exclusion><groupId>io.papermc.paper</groupId><artifactId>paper-api</artifactId></exclusion><exclusion><groupId>org.spigotmc</groupId><artifactId>spigot-api</artifactId></exclusion></exclusions>
         </dependency>
-        <dependency>
-            <groupId>${slimefun.groupId}</groupId>
-            <artifactId>${slimefun.artifactId}</artifactId>
-            <version>${slimefun.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.papermc.paper</groupId>
-                    <artifactId>paper-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.spigotmc</groupId>
-                    <artifactId>spigot-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>${bstats.version}</version>
-        </dependency>
+        <dependency><groupId>org.bstats</groupId><artifactId>bstats-bukkit</artifactId><version>${bstats.version}</version></dependency>
     </dependencies>
 </project>
