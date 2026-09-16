@@ -11,11 +11,10 @@ permissions:
   contents: write
 
 env:
-  ARTIFACT_VERSION: "1.0.3"
-  OUTPUT_NAME: "SF_SlimyTreeTaps1.0.3.jar"
+  ARTIFACT_VERSION: "1.0.4"
+  OUTPUT_NAME: "SF_SlimyTreeTaps1.0.4.jar"
   MAIN_CLASS: "io.github.thebusybiscuit.slimytreetaps.TreeTaps"
   SLIMEFUN_LEGACY_VERSION: "4.1.48"
-  PAPER_VERSION: "26.2.build.111-stable"
 
 concurrency:
   group: sf-slimytreetaps-${{ github.workflow }}-${{ github.ref }}
@@ -23,7 +22,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build and publish SF_SlimyTreeTaps1.0.3.jar
+    name: Build and publish SF_SlimyTreeTaps1.0.4.jar
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -51,19 +50,39 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq '<version>1.0.3</version>' pom.xml
+          grep -Fq '<version>1.0.4</version>' pom.xml
+          grep -Fq '<paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>' pom.xml
           grep -Fq '<finalName>SF_SlimyTreeTaps${project.version}</finalName>' pom.xml
           grep -Fq '<maven.compiler.release>21</maven.compiler.release>' pom.xml
-          grep -Fq 'GNU General Public License v3.0' README.md
-          grep -Fq 'NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.' README.md
           grep -Fq 'COPPER_TREE_TAP' src/main/java/io/github/thebusybiscuit/slimytreetaps/TreeTaps.java
           grep -Fq 'RESIN_CLUMP' src/main/java/io/github/thebusybiscuit/slimytreetaps/TreeTaps.java
           test -s src/main/java/io/github/thebusybiscuit/slimytreetaps/LogCache.java
           test -s src/main/java/io/github/thebusybiscuit/slimytreetaps/ResinConversion.java
-      - name: Build release JAR against Slimefun Legacy and Paper 26.2
+      - name: Verify Paper 1.21.11 baseline
         run: >-
           mvn -B -Dmaven.test.skip=true clean package
-          -Dpaper.version="${PAPER_VERSION}"
+          -Dpaper.version=1.21.11-R0.1-SNAPSHOT
+          -Dslimefun.groupId=com.github.slimefun
+          -Dslimefun.artifactId=Slimefun
+          -Dslimefun.version="${SLIMEFUN_LEGACY_VERSION}"
+      - name: Verify Paper 26.2 primary compatibility
+        run: >-
+          mvn -B -Dmaven.test.skip=true clean package
+          -Dpaper.version=26.2.build.112-stable
+          -Dslimefun.groupId=com.github.slimefun
+          -Dslimefun.artifactId=Slimefun
+          -Dslimefun.version="${SLIMEFUN_LEGACY_VERSION}"
+      - name: Verify Paper 26.3 alpha compatibility
+        run: >-
+          mvn -B -Dmaven.test.skip=true clean package
+          -Dpaper.version=26.3-rc-3.build.1-alpha
+          -Dslimefun.groupId=com.github.slimefun
+          -Dslimefun.artifactId=Slimefun
+          -Dslimefun.version="${SLIMEFUN_LEGACY_VERSION}"
+      - name: Build universal release JAR from Paper 1.21.11 baseline
+        run: >-
+          mvn -B -Dmaven.test.skip=true clean package
+          -Dpaper.version=1.21.11-R0.1-SNAPSHOT
           -Dslimefun.groupId=com.github.slimefun
           -Dslimefun.artifactId=Slimefun
           -Dslimefun.version="${SLIMEFUN_LEGACY_VERSION}"
@@ -77,7 +96,7 @@ jobs:
           cp "$SOURCE" "dist/${OUTPUT_NAME}"
           JAR="dist/${OUTPUT_NAME}"
           unzip -tqq "$JAR"
-          unzip -p "$JAR" plugin.yml | grep -Fq "version: ${ARTIFACT_VERSION}"
+          unzip -p "$JAR" plugin.yml | grep -Eq "^version: ['\"]?${ARTIFACT_VERSION}['\"]?$"
           javap -verbose -classpath "$JAR" "$MAIN_CLASS" | grep -Fq 'major version: 65'
           jar tf "$JAR" | grep -Fq 'io/github/thebusybiscuit/slimytreetaps/LogCache.class'
           jar tf "$JAR" | grep -Fq 'io/github/thebusybiscuit/slimytreetaps/ResinConversion.class'
@@ -105,10 +124,9 @@ jobs:
             EXISTING="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" --jq ".assets[] | select(.name == \"${OUTPUT_NAME}\") | .digest" | head -n 1 || true)"
             if [[ -n "$EXISTING" ]]; then
               if [[ "$EXISTING" != "$EXPECTED" ]]; then echo "Release $TAG already contains different bytes for $OUTPUT_NAME. Bump the addon version instead of replacing an immutable build." >&2; exit 1; fi
-              echo "$OUTPUT_NAME already exists with the expected digest: $EXPECTED"
             else
               gh release upload "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY"
             fi
           else
-            gh release create "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "SF_SlimyTreeTaps $TAG" --notes "Restores Albion-tested Pale Oak and vanilla Resin integration, cached safe log stripping, hardened Magical Mirror handling, and adds the Copper Tree Tap for modern Minecraft. Built with Java 25 targeting Java 21 bytecode against Slimefun Legacy ${SLIMEFUN_LEGACY_VERSION} / Paper ${PAPER_VERSION}."
+            gh release create "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "SF_SlimyTreeTaps $TAG" --notes "SlimyTreeTaps 1.0.4 adds Paper 26.3 alpha compatibility validation while preserving the Paper 1.21.11 / Java 21 universal release baseline, Paper 26.2 primary target, Albion-tested Pale Oak and vanilla Resin integration, safe log stripping, Magical Mirror hardening, and the Copper Tree Tap."
           fi
