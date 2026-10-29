@@ -34,6 +34,8 @@ jobs:
           distribution: temurin
           java-version: '25'
           cache: maven
+      - name: Install checksum-verified Apache Maven 3.10.0
+        run: bash scripts/install_maven_3_10.sh
       - name: Install Slimefun Legacy 4.1.48 locally
         env:
           GH_TOKEN: ${{ github.token }}
